@@ -365,7 +365,6 @@ FodyWeavers.xsd
 /Setup/Release/Setup.msi
 /Setup/Release/Setup.msi
 /Setup/Release/Setup.msi
-/WinVOIE/Services/TextFile1.txt
 *.zip
 
 # Rapports de tests et de couverture : publiés en artefact par le workflow Tests, jamais versionnés

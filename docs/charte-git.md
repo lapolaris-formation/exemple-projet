@@ -1,31 +1,33 @@
-# Charte Git de l'équipe WinVOIE
+# Charte Git de l'équipe <nom de l'équipe ou du produit>
 
-Version 1, adoptée le 03/10/2026 par LaPolaris et ladel1 (dépôt de démonstration)
-Prochaine révision : 03/04/2027
+<!-- À adapter : les valeurs entre < > sont à remplacer ; chaque règle se relit en équipe avant adoption. -->
 
-Chaque règle ci-dessous est en place et vérifiée dans ce dépôt ; la preuve est indiquée entre parenthèses.
+Version 1, adoptée le <date> par <personnes>
+Prochaine révision : <date + 6 mois>
+
+Chaque règle ci-dessous doit être en place et vérifiable dans ce dépôt ; indiquer la preuve entre parenthèses
+(numéro de PR, réglage, fichier) au moment de l'adoption.
 
 ## 1. Dépôt et accès
 
-Organisation GitHub : `lapolaris-formation`
-Offre GitHub : Free, dépôt **public** (fonctions de sécurité gratuites sur dépôt public)
-Dépôts concernés : `demo-vb-security`
+Organisation GitHub : `<organisation>`
+Offre GitHub : <Free, Team…>, dépôt <public ou privé>
+Dépôts concernés : `<dépôt>`
 
 | Personne | Rôle GitHub | Équipes |
 |---|---|---|
-| LaPolaris | propriétaire de l'organisation | — |
-| ladel1 | membre | `developpeurs` (Write), `responsables` (Maintain) |
+| <nom> | propriétaire de l'organisation | — |
+| <nom> | membre | `developpeurs` (Write) |
+| <nom> | membre | `responsables` (Maintain) |
 
 Les équipes sont ajoutées à chaque nouveau dépôt : le droit de base de l'organisation (Read)
 ne donne ni l'écriture ni une approbation valable.
-Chaque équipe de relecteurs compte au moins deux personnes : **écart actuel**, une seule personne
-par équipe (ladel1) ; l'auteur d'une PR touchant `.github/` doit donc toujours être LaPolaris.
+Chaque équipe de relecteurs compte au moins deux personnes.
 
-Authentification à deux facteurs : **non exigée au niveau de l'organisation**, décision écrite :
-l'exiger retirerait les membres qui ne l'ont pas configurée. À exiger dès que chacun l'a activée.
+Authentification à deux facteurs : exigée au niveau de l'organisation.
 
 Revue des accès : à chaque arrivée, départ ou changement de poste, et au minimum une fois par an.
-Responsable de cette revue : LaPolaris
+Responsable de cette revue : <nom>
 
 Identité des commits : nom réel ou pseudonyme du compte, adresse noreply GitHub,
 configurée par dépôt si un poste porte plusieurs comptes.
@@ -36,13 +38,12 @@ indentation de 2 espaces pour le YAML).
 
 Modèle retenu : GitHub Flow avec branches de release
 
-- `main` : protégée par le ruleset `protection-main`, bypass list vide, toujours en état livrable
+- `main` : protégée par un ruleset, bypass list vide, toujours en état livrable
 - branches de travail : courtes, une par issue, supprimées après fusion (réglage du dépôt)
 - `release/x.y` : créée depuis le tag livré si un correctif doit partir sur une version installée ;
-  le ruleset couvre déjà `release/**`
-- branches `demo/*` : conservées, jamais fusionnées, pour relire le code des démonstrations
+  le ruleset couvre aussi `release/**`
 
-Durée de vie maximale d'une branche de travail : 5 jours ouvrés
+Durée de vie maximale d'une branche de travail : <5 jours ouvrés>
 
 Les branches de release ne sont pas surveillées par Dependabot :
 leur audit de dépendances est fait par le référent sécurité à chaque correctif reporté.
@@ -52,9 +53,9 @@ leur audit de dépendances est fait par le référent sécurité à chaque corre
 Format : `type/numéro-libellé-court`, le numéro étant celui de l'issue **lu sur GitHub après sa création**.
 Issues et pull requests partagent la même numérotation, et Dependabot en consomme : ne jamais deviner un numéro.
 
-Types autorisés : `feat`, `fix`, `hotfix`, `refactor`, `test`, `ci`, `chore`, `docs`, `demo`
+Types autorisés : `feat`, `fix`, `hotfix`, `refactor`, `test`, `ci`, `chore`, `docs`
 
-Exemples : `fix/17-mots-de-passe-en-dur`, `ci/19-detection-secrets`
+Exemples : `fix/12-calcul-arrondi`, `ci/15-detection-secrets`
 
 Interdits : prénoms, `test`, `v2`, `final`, `ok`
 
@@ -69,11 +70,11 @@ se commite en `docs`, `chore` ou `ci`, jamais en `fix`.
 
 Rupture de compatibilité : `!` après le type, ou pied `BREAKING CHANGE:`
 
-Un correctif de sécurité explique dans le corps la faille et sa correction (PR #18, #31).
+Un correctif de sécurité explique dans le corps la faille et sa correction.
 Le lien vers l'issue s'écrit `Refs #` dans le commit ; `Closes #` dans la pull request.
 Commit de fusion : message proposé par GitHub (« Merge pull request #… »).
 Commits de Dependabot : préfixe `build` (NuGet) ou `ci` (actions), imposé par `dependabot.yml`.
-Signature des commits : non
+Signature des commits : <oui ou non>
 
 ## 5. Issues
 
@@ -81,7 +82,7 @@ Tout changement commence par une issue. Aucune exception.
 
 Modèles disponibles : anomalie, évolution.
 Une vulnérabilité **non publiée** ne s'ouvre jamais en issue publique : signalement privé GitHub
-ou adresse de `SECURITY.md`. Une faille déjà publique (CVE d'un paquet, alerte d'outil sur dépôt public)
+ou adresse de `SECURITY.md`. Une faille déjà publique (CVE d'un paquet, alerte d'outil)
 peut faire l'objet d'une issue `securite`.
 
 Labels :
@@ -114,7 +115,7 @@ Nombre d'approbations requises : 1, et celle des propriétaires de code (CODEOWN
 L'auteur d'une pull request ne l'approuve jamais, propriétaire compris.
 Une nouvelle poussée annule les approbations précédentes.
 
-Délai de réponse attendu d'un relecteur : 1 jour ouvré
+Délai de réponse attendu d'un relecteur : <1 jour ouvré>
 
 Niveaux de commentaire, et bouton GitHub correspondant :
 - `blocker` : bloque la fusion → Request changes
@@ -132,28 +133,29 @@ arbitrage par l'équipe `responsables`. Jamais de fusion en force.
 ## 8. Tests et intégration continue
 
 Le pipeline doit être vert avant toute fusion.
-Contrôles requis dans le ruleset : `build`, `tests`, `revue-dependances`, `issue-liee`, `detection-secrets`, `titre-pr`
+Contrôles requis dans le ruleset : `build`, `tests`, `issue-liee`, `titre-pr`, `detection-secrets`,
+et `revue-dependances` si le dépôt y a droit (public, ou licence Code Security)
 Responsable de la mise à jour du ruleset quand un job change de nom : équipe `responsables`
 
 Le job `build` vérifie aussi que chaque assembly livré se charge avec la configuration de l'exécutable :
-un build vert ne prouve pas que le programme démarre (PR Dependabot #11 et #27).
+un build vert ne prouve pas que le programme démarre.
 
 Un test est écrit :
 - pour toute nouvelle classe métier
-- pour tout défaut corrigé, reproduisant le défaut avant correction (PR #18, #31)
+- pour tout défaut corrigé, reproduisant le défaut avant correction
 
-Couverture visée sur le périmètre métier : non mesurée à ce jour, point ouvert
+Couverture visée sur le périmètre métier : <objectif, ou « non mesurée, point ouvert »>
 Périmètre exclu : interface, code généré
 
 Que fait-on d'une pull request dont les tests échouent :
 elle n'est pas fusionnable (contrôle `tests` requis) ; l'auteur corrige ou retire la modification.
 
-Épinglage du runner et du SDK : non (`windows-latest`, `ubuntu-latest`), écart de version accepté
-Usage de Copilot et d'« Explain error » : autorisé sur ce dépôt public, interdit sur un dépôt client sans accord écrit
+Épinglage du runner et du SDK : <oui ou non>
+Usage d'outils d'IA sur le code : <règle de l'entreprise>
 
 ## 9. Versions et livraisons
 
-Format des tags : `vMAJEUR.MINEUR.CORRECTIF` (premier tag : `v6.73.1`)
+Format des tags : `vMAJEUR.MINEUR.CORRECTIF`
 La version de l'assembly est alignée sur le tag par le workflow `release`.
 
 Règle d'incrément :
@@ -167,20 +169,20 @@ Toute version livrée à un client donne lieu à (workflow `release`, déclench�
 - un tag
 - une release GitHub, publiée sans l'option préversion
 - le binaire, construit par le pipeline depuis le tag, attaché
-- le SBOM (`WinVOIE-<version>.cdx.json`), DLL de fournisseurs comprises, attaché
+- le SBOM (`<Produit>-<version>.cdx.json`), DLL de fournisseurs comprises, attaché
 - une attestation de provenance sur l'exécutable et le livrable
 - une entrée de changelog
 
 Binaire, SBOM et attestation partent du même tag.
-Signature de code : non en place (certificat de test uniquement, à la main)
-Installateur : produit à la main avec Visual Studio (`Setup.vdproj`, non compilable par MSBuild)
+Signature de code : <certificat retenu, personne qui la porte>
+Installateur : <comment il est produit>
 
 Archivage des livrables et de leur documentation :
-releases GitHub, plus copie hors GitHub à définir, durée 10 ans
+releases GitHub, plus copie hors GitHub <où>, durée 10 ans
 
 ## 10. Sécurité
 
-Aucun secret dans le dépôt, ni dans le code (mot de passe comparé en dur compris : PR #18).
+Aucun secret dans le dépôt, ni dans le code (mot de passe comparé en dur compris).
 Un secret poussé est révoqué immédiatement, sans attendre le nettoyage de l'historique.
 Les formats de secrets propres au produit ont une règle de détection (`.gitleaks.toml`).
 Une trouvaille historique n'est acquittée dans `.gitleaksignore` qu'avec sa décision écrite,
@@ -188,21 +190,21 @@ et ce fichier est sous CODEOWNERS `responsables`.
 
 Traitement des alertes et des pull requests Dependabot :
 - revue hebdomadaire, le lundi (jour de passage de Dependabot)
-- une issue par décision, y compris quand on ne fusionne pas (issue #25)
+- une issue par décision, y compris quand on ne fusionne pas
 - une PR Dependabot verte se relit comme les autres : vérifier ce qu'elle livre, pas seulement qu'elle compile
-- montées majeures de Microsoft.Extensions, Microsoft.Bcl et Pkcs ignorées jusqu'à la migration coordonnée avec PDFsharp
+- une montée majeure figée (`ignore` dans `dependabot.yml`) renvoie à son issue et à sa date de migration
 
 Inventaire des DLL de fournisseurs (hors NuGet) : tenu par le référent sécurité,
-dans le README et dans `.github/outils/sbom-hors-nuget.py`
+dans le README et dans `.github/outils/composants-hors-nuget.json`
 `SECURITY.md` est sous CODEOWNERS `responsables` : ses délais engagent l'entreprise.
 
-Référent sécurité : LaPolaris
+Référent sécurité : <nom>
 
 ## 11. Procédure d'urgence
 
 Une livraison urgente peut justifier un contournement des règles.
 
-Qui peut l'autoriser : le propriétaire de l'organisation (LaPolaris)
+Qui peut l'autoriser : <le propriétaire de l'organisation>
 Dans quels cas : machine d'un client à l'arrêt, ou vulnérabilité activement exploitée
 
 Le ruleset n'a pas de bypass : le contournement consiste à retirer temporairement une règle,

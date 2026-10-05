@@ -29,7 +29,7 @@ jobs:
           fi
 
   titre-pr:
-    # Le titre devient la 1re ligne du commit de fusion et du changelog (cas de la PR #20 « Ci/19 detection secrets »)
+    # Le titre devient la 1re ligne du commit de fusion et du changelog : un titre comme « Ci/19 detection secrets » est refusé
     runs-on: ubuntu-latest
     steps:
       - name: Le titre suit Conventional Commits

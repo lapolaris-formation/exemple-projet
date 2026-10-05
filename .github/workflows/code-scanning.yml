@@ -2,6 +2,7 @@ name: Analyse de code (VB.NET)
 
 # CodeQL ne supporte PAS VB.NET : on produit du SARIF avec d'autres outils
 # et on l'envoie dans l'onglet Security > Code scanning.
+# Sur un dépôt privé, l'affichage dans Code scanning demande la licence GitHub Code Security.
 
 on:
   push:
@@ -17,6 +18,11 @@ permissions:
   security-events: write   # upload SARIF
   actions: read
 
+# À adapter pour un nouveau projet : la solution et le projet de l'application
+env:
+  SOLUTION: ExempleProjet.sln
+  PROJET: ExempleProjet
+
 jobs:
   roslyn:
     name: Analyseurs Roslyn (SecurityCodeScan + NetAnalyzers)
@@ -29,7 +35,7 @@ jobs:
         uses: microsoft/setup-msbuild@v3
 
       - name: Restaurer les paquets (packages.config)
-        run: msbuild WinVOIE.sln -t:restore -p:RestorePackagesConfig=true
+        run: msbuild ${{ env.SOLUTION }} -t:restore -p:RestorePackagesConfig=true
 
       # Paquets d'analyseurs téléchargés depuis nuget.org, hors du projet (versions épinglées)
       - name: Télécharger les analyseurs
@@ -46,7 +52,7 @@ jobs:
       # On analyse le projet de l'application, pas la solution : les tests n'ont pas à l'être
       - name: Compiler avec analyse (aucune modification du .vbproj)
         run: >
-          msbuild WinVOIE\WinVOIE.vbproj -t:Rebuild -p:Configuration=Release
+          msbuild ${{ env.PROJET }}\${{ env.PROJET }}.vbproj -t:Rebuild -p:Configuration=Release
           "-p:CustomAfterMicrosoftCommonTargets=${{ github.workspace }}\.github\codescan\Analyzers.targets"
           "-p:AnalyzersRoot=${{ runner.temp }}\an"
           "-p:SarifOutput=${{ runner.temp }}\roslyn.sarif"

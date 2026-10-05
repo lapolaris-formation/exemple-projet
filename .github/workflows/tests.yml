@@ -1,4 +1,4 @@
-name: Tests WinVOIE
+name: Tests
 
 on:
   push:
@@ -9,6 +9,11 @@ on:
 
 permissions:
   contents: read
+
+# À adapter pour un nouveau projet : la solution et le projet de tests
+env:
+  SOLUTION: ExempleProjet.sln
+  PROJET_TESTS: ExempleProjet.Tests
 
 jobs:
   tests:
@@ -23,10 +28,10 @@ jobs:
         uses: microsoft/setup-msbuild@v3
 
       - name: Restaurer les paquets (packages.config)
-        run: msbuild WinVOIE.sln -t:restore -p:RestorePackagesConfig=true
+        run: msbuild ${{ env.SOLUTION }} -t:restore -p:RestorePackagesConfig=true
 
       - name: Compiler
-        run: msbuild WinVOIE.sln -p:Configuration=Release "-p:Platform=Any CPU" -m
+        run: msbuild ${{ env.SOLUTION }} -p:Configuration=Release "-p:Platform=Any CPU" -m
 
       - name: Exécuter les tests
         shell: pwsh
@@ -34,7 +39,7 @@ jobs:
           $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
           # Chemin exact plutôt que "**\vstest.console.exe" : la recherche récursive coûte une minute
           $vstest = & $vswhere -latest -products * -find "Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe" | Select-Object -First 1
-          & $vstest tests\WinVOIE.Tests\bin\Release\WinVOIE.Tests.dll `
+          & $vstest "tests\$env:PROJET_TESTS\bin\Release\$env:PROJET_TESTS.dll" `
             "/logger:trx;LogFileName=resultats.trx" /ResultsDirectory:TestResults
           exit $LASTEXITCODE
 

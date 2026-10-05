@@ -3,9 +3,9 @@
 //
 // Pourquoi : sur un projet .NET Framework, une mise à jour de paquet peut donner un build
 // et des tests verts, puis une FileLoadException au chargement chez le client
-// (PR Dependabot #11 et #27, issue #32).
+// (DLL absente du livrable, ou redirection de liaison manquante).
 //
-// Usage (CI) : compilé dans une copie de bin\Release, avec WinVOIE.exe.config copié en
+// Usage (CI) : compilé dans une copie de bin\Release, avec <Projet>.exe.config copié en
 // verifier-liaisons.exe.config pour que le chargeur applique exactement les mêmes règles.
 // Code C# 5 : compilable par le csc de .NET Framework, sans dépendance.
 using System;

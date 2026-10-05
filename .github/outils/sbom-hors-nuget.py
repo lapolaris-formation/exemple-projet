@@ -1,25 +1,24 @@
-# Ajoute au SBOM CycloneDX les DLL de fournisseurs versionnées dans WinVOIE/dll :
-# CycloneDX ne connaît que les paquets NuGet, ces composants n'y figurent pas (jours 4 et 5).
-# Usage : python3 sbom-hors-nuget.py <bom.json> <dossier des DLL>
+# Ajoute au SBOM CycloneDX les DLL de fournisseurs livrées sans NuGet :
+# CycloneDX ne connaît que les paquets NuGet, ces composants n'y figurent pas.
+# Usage : python3 sbom-hors-nuget.py <bom.json> <liste des composants (.json)>
+# La liste est .github/outils/composants-hors-nuget.json ; vide, le SBOM reste inchangé.
 import hashlib
 import json
-import os
 import sys
 
-# Liste à tenir à jour avec le tableau « Composants tiers hors NuGet » du README
-COMPOSANTS = [
-    {"fichier": "TwinCAT.Ads.dll", "nom": "TwinCAT.Ads", "version": "4.3.30",
-     "editeur": "Beckhoff Automation", "licence": "Propriétaire Beckhoff (DLL factice de démonstration)"},
-    {"fichier": "Fde.Vmp60.Network.dll", "nom": "Fde.Vmp60.Network", "version": "1.2.0",
-     "editeur": "Fournisseur Fde", "licence": "Propriétaire (DLL factice de démonstration)"},
-]
+bom_chemin, liste_chemin = sys.argv[1], sys.argv[2]
+with open(liste_chemin, encoding="utf-8") as f:
+    composants = json.load(f)["composants"]
+if not composants:
+    print("aucun composant hors NuGet déclaré")
+    sys.exit(0)
 
-bom_chemin, dossier = sys.argv[1], sys.argv[2]
 with open(bom_chemin, encoding="utf-8") as f:
     bom = json.load(f)
 
-for c in COMPOSANTS:
-    with open(os.path.join(dossier, c["fichier"]), "rb") as f:
+for c in composants:
+    # chemin de la DLL depuis la racine du dépôt : l'empreinte prouve quel fichier est livré
+    with open(c["fichier"], "rb") as f:
         empreinte = hashlib.sha256(f.read()).hexdigest()
     bom.setdefault("components", []).append({
         "type": "library",
@@ -27,7 +26,7 @@ for c in COMPOSANTS:
         "name": c["nom"],
         "version": c["version"],
         "publisher": c["editeur"],
-        "description": "DLL hors NuGet, versionnée dans WinVOIE/dll",
+        "description": "DLL hors NuGet, versionnée dans " + c["fichier"],
         "licenses": [{"license": {"name": c["licence"]}}],
         "hashes": [{"alg": "SHA-256", "content": empreinte}],
     })

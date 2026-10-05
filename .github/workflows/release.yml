@@ -1,13 +1,19 @@
 name: Release
 
 # Une version livrée = un tag vMAJEUR.MINEUR.CORRECTIF.
-# Binaire, SBOM et attestation de provenance partent du même tag (jours 4 et 5).
+# Binaire, SBOM et attestation de provenance partent du même tag.
 on:
   push:
     tags: [ 'v*' ]
 
 permissions:
   contents: read
+
+# À adapter pour un nouveau projet : la solution, le projet de l'application et le nom du produit
+env:
+  SOLUTION: ExempleProjet.sln
+  PROJET: ExempleProjet
+  PRODUIT: ExempleProjet
 
 jobs:
   binaire:
@@ -16,7 +22,7 @@ jobs:
     permissions:
       contents: read
       id-token: write        # identité du workflow, qui signe l'attestation
-      attestations: write
+      attestations: write    # sur dépôt privé : GitHub Enterprise Cloud requis
     env:
       TAG: ${{ github.ref_name }}
     steps:
@@ -31,32 +37,32 @@ jobs:
         run: |
           $version = $env:TAG.TrimStart('v')
           if ($version -notmatch '^\d+\.\d+\.\d+$') { throw "Tag attendu : vMAJEUR.MINEUR.CORRECTIF, reçu : $env:TAG" }
-          $fichier = Join-Path $PWD 'WinVOIE\My Project\AssemblyInfo.vb'
+          $fichier = Join-Path $PWD "$env:PROJET\My Project\AssemblyInfo.vb"
           $texte = [IO.File]::ReadAllText($fichier) -replace 'Assembly(File)?Version\("[^"]*"\)', ('Assembly$1Version("' + $version + '.0")')
           [IO.File]::WriteAllText($fichier, $texte, (New-Object System.Text.UTF8Encoding($true)))
           Select-String -Path $fichier -Pattern '^<Assembly: Assembly(File)?Version'
 
       - name: Restaurer les paquets (packages.config)
-        run: msbuild WinVOIE.sln -t:restore -p:RestorePackagesConfig=true
+        run: msbuild ${{ env.SOLUTION }} -t:restore -p:RestorePackagesConfig=true
 
       - name: Compiler
-        run: msbuild WinVOIE\WinVOIE.vbproj -p:Configuration=Release
+        run: msbuild ${{ env.PROJET }}\${{ env.PROJET }}.vbproj -p:Configuration=Release
 
       - name: Assembler le livrable
         shell: pwsh
         run: |
           $version = $env:TAG.TrimStart('v')
           New-Item -ItemType Directory -Force livrable | Out-Null
-          Get-ChildItem WinVOIE\bin\Release -Exclude *.pdb, *.xml |
-            Compress-Archive -DestinationPath "livrable\WinVOIE-$version.zip"
-          "Version de WinVOIE.exe : " + (Get-Item WinVOIE\bin\Release\WinVOIE.exe).VersionInfo.FileVersion
+          Get-ChildItem "$env:PROJET\bin\Release" -Exclude *.pdb, *.xml |
+            Compress-Archive -DestinationPath "livrable\$env:PRODUIT-$version.zip"
+          "Version de $env:PROJET.exe : " + (Get-Item "$env:PROJET\bin\Release\$env:PROJET.exe").VersionInfo.FileVersion
 
       - name: Générer l'attestation de provenance
         uses: actions/attest-build-provenance@v4
         with:
           subject-path: |
-            WinVOIE/bin/Release/WinVOIE.exe
-            livrable/WinVOIE-*.zip
+            ${{ env.PROJET }}/bin/Release/${{ env.PROJET }}.exe
+            livrable/${{ env.PRODUIT }}-*.zip
 
       - name: Conserver le livrable
         uses: actions/upload-artifact@v7
@@ -80,13 +86,14 @@ jobs:
       - name: Installer CycloneDX
         run: dotnet tool install --global CycloneDX --version 6.2.0
 
-      # SBOM du PRODUIT (pas de la solution) : sans composants de tests, nom et version du tag
+      # SBOM du PRODUIT (pas de la solution) : sans composants de tests, nom et version du tag.
+      # Les DLL hors NuGet listées dans .github/outils/composants-hors-nuget.json y sont ajoutées.
       - name: Générer le SBOM du produit
         run: |
           VERSION="${TAG#v}"
-          dotnet CycloneDX WinVOIE/WinVOIE.vbproj -o sbom -F Json -sn WinVOIE -sv "$VERSION"
-          python3 .github/outils/sbom-hors-nuget.py sbom/bom.json WinVOIE/dll
-          mv sbom/bom.json "sbom/WinVOIE-$VERSION.cdx.json"
+          dotnet CycloneDX "$PROJET/$PROJET.vbproj" -o sbom -F Json -sn "$PRODUIT" -sv "$VERSION"
+          python3 .github/outils/sbom-hors-nuget.py sbom/bom.json .github/outils/composants-hors-nuget.json
+          mv sbom/bom.json "sbom/$PRODUIT-$VERSION.cdx.json"
 
       - name: Conserver le SBOM
         uses: actions/upload-artifact@v7
@@ -114,5 +121,5 @@ jobs:
       - name: Créer la release
         run: |
           gh release create "$TAG" livraison/* --repo "$GITHUB_REPOSITORY" \
-            --title "WinVOIE ${TAG#v}" \
-            --notes "Binaire construit par le pipeline depuis le tag $TAG. SBOM CycloneDX, DLL hors NuGet comprises. Vérifier la provenance : gh attestation verify WinVOIE.exe --owner $GITHUB_REPOSITORY_OWNER. Détail des changements : WinVOIE/CHANGELOG.md."
+            --title "$PRODUIT ${TAG#v}" \
+            --notes "Binaire construit par le pipeline depuis le tag $TAG. SBOM CycloneDX, DLL hors NuGet comprises. Vérifier la provenance : gh attestation verify $PROJET.exe --owner $GITHUB_REPOSITORY_OWNER."

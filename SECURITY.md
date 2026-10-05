@@ -1,5 +1,5 @@
 <!--
-  Délais et adresse = engagements de l'entreprise : valeurs d'exemple (FERRODEMO est fictive),
+  À adapter : les valeurs entre < > sont à remplacer. Délais et adresse = engagements de l'entreprise,
   à faire valider par la direction avant tout usage réel. Fichier sous CODEOWNERS « responsables ».
 -->
 # Politique de sécurité
@@ -8,8 +8,8 @@
 
 | Version | Correctifs de sécurité |
 |---|---|
-| 6.73.x | oui |
-| < 6.73 | non |
+| <version actuelle, ex. 1.0.x> | oui |
+| < <version actuelle> | non |
 
 Les correctifs de sécurité sont fournis gratuitement pour toutes les versions prises en charge.
 
@@ -17,8 +17,8 @@ Les correctifs de sécurité sont fournis gratuitement pour toutes les versions 
 
 **N'ouvrez pas d'issue publique** : elle serait visible de tous avant qu'un correctif existe.
 
-- Signalement privé GitHub : onglet **Security**, bouton « Report a vulnerability »
-- Courriel : securite@ferrodemo.example
+- Signalement privé GitHub (dépôt public seulement) : onglet **Security**, bouton « Report a vulnerability »
+- Courriel : <adresse de sécurité, ex. securite@entreprise.fr>
 
 Merci d'indiquer : la version concernée, une description et l'impact, les étapes
 pour reproduire, et si vous avez connaissance d'une exploitation active.
@@ -27,8 +27,8 @@ pour reproduire, et si vous avez connaissance d'une exploitation active.
 
 | Étape | Délai |
 |---|---|
-| Accusé de réception | 3 jours ouvrés |
-| Première qualification | 10 jours ouvrés |
+| Accusé de réception | <délai, ex. 3 jours ouvrés> |
+| Première qualification | <délai, ex. 10 jours ouvrés> |
 
 ## Divulgation coordonnée
 

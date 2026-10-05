@@ -1,11 +1,12 @@
 # Dependabot : mises à jour de version (PR hebdo) pour NuGet (packages.config) et GitHub Actions.
-# Les alertes de vulnérabilité + "security updates" s'activent dans Settings > Code security.
+# Les alertes de vulnérabilité et les "security updates" s'activent dans Settings > Advanced Security.
+# Labels "dependances" et "ci" à créer AVANT la fusion de ce fichier.
 version: 2
 updates:
   - package-ecosystem: "nuget"
-    directories:                   # un packages.config par projet : chaque dossier doit être listé
-      - "/WinVOIE"
-      - "/tests/WinVOIE.Tests"
+    directories:                   # un packages.config par projet : chaque dossier qui en a un doit être listé
+      - "/tests/ExempleProjet.Tests"
+      # - "/ExempleProjet"         # à décommenter dès que l'application a son propre packages.config
     schedule:
       interval: "weekly"
       day: "monday"
@@ -16,20 +17,15 @@ updates:
     commit-message:
       prefix: "build"
       include: "scope"
-    # Mineures et correctives regroupées en une seule PR ; les majeures restent séparées (jour 4)
+    # Mineures et correctives regroupées en une seule PR ; les majeures restent séparées
     groups:
       dependances-mineures:
         update-types: [ "minor", "patch" ]
-    # Décision de l'issue #25 : la ligne 8.x de ces paquets est figée tant que la migration
-    # vers 10.x n'est pas faite AVEC PDFsharp (la PR #11 livrait un exécutable sans
-    # Microsoft.Extensions.Logging.Abstractions.dll). Échéance : fin de support .NET 8, 10/11/2026.
-    ignore:
-      - dependency-name: "Microsoft.Extensions.*"
-        update-types: [ "version-update:semver-major" ]
-      - dependency-name: "Microsoft.Bcl.*"
-        update-types: [ "version-update:semver-major" ]
-      - dependency-name: "System.Security.Cryptography.Pkcs"
-        update-types: [ "version-update:semver-major" ]
+    # Pour figer les montées majeures d'un paquet jusqu'à une migration préparée,
+    # après une décision écrite dans une issue :
+    # ignore:
+    #   - dependency-name: "Nom.Du.Paquet"
+    #     update-types: [ "version-update:semver-major" ]
 
   - package-ecosystem: "github-actions"
     directory: "/"

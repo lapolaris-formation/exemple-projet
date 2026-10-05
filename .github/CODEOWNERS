@@ -1,20 +1,22 @@
-# Relecteurs par défaut sur l'ensemble du dépôt
-*                       @lapolaris-formation/developpeurs
+# À adapter : remplacer ORGANISATION par le nom de l'organisation GitHub.
+# Les équipes developpeurs (Write) et responsables (Maintain) doivent exister et avoir accès au dépôt.
+# Vérification : gh api repos/ORGANISATION/<depot>/codeowners/errors  →  {"errors":[]}
 
-# Code source applicatif
-/WinVOIE/               @lapolaris-formation/developpeurs
+# Relecteurs par défaut sur l'ensemble du dépôt
+*                       @ORGANISATION/developpeurs
 
 # Fichiers sensibles : workflows et configuration de sécurité
 # (couvre aussi .github/CODEOWNERS lui-même)
-/.github/               @lapolaris-formation/responsables
-/.github/workflows/     @lapolaris-formation/responsables
+/.github/               @ORGANISATION/responsables
+/.github/workflows/     @ORGANISATION/responsables
 
-# Politique de sécurité : engagements de l'entreprise (jour 4)
-/SECURITY.md            @lapolaris-formation/responsables
+# Politique de sécurité : engagements de l'entreprise
+/SECURITY.md            @ORGANISATION/responsables
 
 # Détection de secrets : acquitter une trouvaille est une décision de sécurité
-/.gitleaks.toml         @lapolaris-formation/responsables
-/.gitleaksignore        @lapolaris-formation/responsables
+/.gitleaks.toml         @ORGANISATION/responsables
+/.gitleaksignore        @ORGANISATION/responsables
 
-# DLL de fournisseurs versionnées (TwinCAT, Fde) : invisibles pour Dependabot et le SBOM
-/WinVOIE/dll/           @lapolaris-formation/responsables
+# DLL de fournisseurs versionnées : invisibles pour Dependabot, ajoutées au SBOM à la main
+# (à décommenter si le projet en a)
+# /ExempleProjet/dll/   @ORGANISATION/responsables

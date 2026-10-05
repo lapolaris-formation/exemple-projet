@@ -1,0 +1,4 @@
+{
+  "_mode_emploi": "Une entrée par DLL de fournisseur livrée sans NuGet (dossier dll/ par exemple), ajoutée au SBOM de chaque release. Champs : fichier (chemin depuis la racine du dépôt), nom, version, editeur, licence. Exemple : {\"fichier\": \"ExempleProjet/dll/Fournisseur.Machine.dll\", \"nom\": \"Fournisseur.Machine\", \"version\": \"2.1.0\", \"editeur\": \"Fournisseur\", \"licence\": \"Propriétaire\"}",
+  "composants": []
+}
