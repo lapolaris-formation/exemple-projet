@@ -25,25 +25,23 @@ L'application elle-même est vide : un formulaire, et un module `Calculs` d'exem
 | `.github/CODEOWNERS`, modèles d'issue et de PR | revue obligatoire, formulaires communs |
 | `SECURITY.md` | politique de signalement des vulnérabilités |
 | `docs/charte-git.md` | les règles de l'équipe, à adapter et adopter |
-| `CHECKLIST.md` | la mise en place du dépôt, étape par étape |
+| `CHECKLIST.md` | la mise en place du dépôt, case par case |
+| `docs/procedure-complete.md` | **la procédure complète**, commande par commande : du dépôt vide à la release avec SBOM et provenance |
+| `docs/ruleset-protection-main.json` | le ruleset de `main`, à importer dans GitHub |
+| `outils/renommer-projet.ps1` | renomme le modèle pour un nouveau projet |
 
 ## Réutiliser le modèle pour un nouveau projet
 
-1. **Copier** le dossier, sans `bin`, `obj`, `packages` ni `.vs`.
-2. **Renommer** le projet dans Visual Studio (solution, projet, espace de noms), ou remplacer `ExempleProjet`
-   dans les noms de fichiers et dans `ExempleProjet.sln`, les deux `.vbproj` et `AssemblyInfo.vb`.
-3. **Adapter les lignes `env:`** en tête de chaque workflow : c'est le seul endroit où le nom du projet apparaît.
+Suivre `docs/procedure-complete.md`. En résumé :
 
-   ```yaml
-   env:
-     SOLUTION: ExempleProjet.sln
-     PROJET: ExempleProjet
-   ```
-
-4. **Remplacer les repères** : `ORGANISATION` dans `.github/CODEOWNERS`, les valeurs entre `< >`
+1. **Créer le dépôt** à partir du modèle (**Use this template**), puis le cloner dans un chemin court (`C:\dev\…`).
+2. **Renommer** le projet : `powershell -ExecutionPolicy Bypass -File outils\renommer-projet.ps1 -Nouveau MonProjet`.
+   Le script met aussi à jour les lignes `env:` en tête des workflows, seul endroit où ils citent le projet.
+3. **Remplacer les repères** : `ORGANISATION` dans `.github/CODEOWNERS`, les valeurs entre `< >`
    dans `SECURITY.md` et `docs/charte-git.md`.
-5. **Lister les dossiers** qui contiennent un `packages.config` dans `.github/dependabot.yml`.
-6. **Suivre `CHECKLIST.md`** : création du dépôt, réglages GitHub, contrôles requis.
+4. **Lister les dossiers** qui contiennent un `packages.config` dans `.github/dependabot.yml`.
+5. **Régler le dépôt sur GitHub** : équipes, pull requests, labels, sécurité, ruleset.
+6. **Cocher `CHECKLIST.md`** au fil des pull requests.
 
 Les fichiers YAML s'indentent avec **deux espaces**, jamais de tabulation (réglé par `.editorconfig`).
 Ne copiez jamais un workflow depuis un PDF : copiez le fichier.
@@ -79,4 +77,6 @@ avec son empreinte SHA-256.
 | Secret scanning, protection à l'envoi | gratuit | GitHub Secret Protection |
 | Attestation de provenance | gratuit | GitHub Enterprise Cloud |
 
-Sans ces licences, les workflows tournent quand même : leurs résultats restent dans les journaux.
+Sans ces licences, créer les variables de dépôt `CODE_SECURITY` = `non` et `ATTESTATION` = `non`
+(**Settings**, **Secrets and variables**, **Actions**, **Variables**) : les workflows restent verts,
+les résultats d'analyse sont gardés en artefact, et la release part sans attestation.

@@ -11,6 +11,9 @@ permissions:
 
 jobs:
   revue-dependances:
+    # Gratuit sur dépôt public ; sur dépôt privé, exige GitHub Code Security.
+    # Sans cette licence : variable de dépôt CODE_SECURITY = non (le job est alors sauté)
+    if: ${{ vars.CODE_SECURITY != 'non' }}
     runs-on: ubuntu-latest
     steps:
       - name: Récupérer le code

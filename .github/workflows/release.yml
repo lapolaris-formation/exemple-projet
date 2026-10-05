@@ -57,7 +57,10 @@ jobs:
             Compress-Archive -DestinationPath "livrable\$env:PRODUIT-$version.zip"
           "Version de $env:PROJET.exe : " + (Get-Item "$env:PROJET\bin\Release\$env:PROJET.exe").VersionInfo.FileVersion
 
+      # Gratuit sur dépôt public ; sur dépôt privé, exige GitHub Enterprise Cloud.
+      # Sans cette licence : variable de dépôt ATTESTATION = non (Settings, Secrets and variables, Actions, Variables)
       - name: Générer l'attestation de provenance
+        if: ${{ vars.ATTESTATION != 'non' }}
         uses: actions/attest-build-provenance@v4
         with:
           subject-path: |

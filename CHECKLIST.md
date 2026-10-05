@@ -1,6 +1,7 @@
 # Checklist de mise en place du dépôt
 
 Procédure pour un nouveau dépôt créé à partir de ce modèle, dans l'ordre.
+Le détail de chaque étape, commande par commande, est dans `docs/procedure-complete.md`.
 **Une étape se coche dans la pull request qui la réalise**, avec sa preuve : numéro de PR, commit ou réglage vérifié.
 Une étape faite uniquement dans les réglages GitHub se coche dans la PR suivante.
 
@@ -15,7 +16,8 @@ Légende : `[x]` fait et vérifié, `[ ]` à faire.
   - [ ] Équipes `developpeurs` (Write) et `responsables` (Maintain) ajoutées au dépôt ; au moins deux personnes par équipe
   - [ ] Authentification à deux facteurs exigée pour l'organisation, ou décision écrite si elle ne l'est pas encore
 - **C. Adapter le modèle** (voir `README.md`)
-  - [ ] Projet renommé ; lignes `env:` des workflows adaptées
+  - [ ] Projet renommé par `outils\renommer-projet.ps1` ; lignes `env:` des workflows vérifiées
+  - [ ] Variables `CODE_SECURITY` et `ATTESTATION` = `non` si le dépôt privé n'a pas les licences
   - [ ] `ORGANISATION` remplacé dans `.github/CODEOWNERS`
   - [ ] Valeurs entre `< >` remplacées dans `SECURITY.md` et `docs/charte-git.md`
   - [ ] Dossiers des `packages.config` listés dans `.github/dependabot.yml`

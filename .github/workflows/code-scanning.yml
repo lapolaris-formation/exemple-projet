@@ -3,6 +3,8 @@ name: Analyse de code (VB.NET)
 # CodeQL ne supporte PAS VB.NET : on produit du SARIF avec d'autres outils
 # et on l'envoie dans l'onglet Security > Code scanning.
 # Sur un dépôt privé, l'affichage dans Code scanning demande la licence GitHub Code Security.
+# Sans cette licence : variable de dépôt CODE_SECURITY = non ; les résultats SARIF sont alors
+# conservés en artefact, à ouvrir dans Visual Studio (extension SARIF Viewer).
 
 on:
   push:
@@ -58,10 +60,19 @@ jobs:
           "-p:SarifOutput=${{ runner.temp }}\roslyn.sarif"
 
       - name: Envoyer le SARIF vers Code scanning
+        if: ${{ vars.CODE_SECURITY != 'non' }}
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: ${{ runner.temp }}/roslyn.sarif
           category: roslyn-vbnet
+
+      - name: Conserver le SARIF (sans Code Security)
+        if: ${{ vars.CODE_SECURITY == 'non' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: sarif-roslyn
+          path: ${{ runner.temp }}/roslyn.sarif
+          retention-days: 30
 
   devskim:
     name: DevSkim (motifs, tous langages)
@@ -77,7 +88,16 @@ jobs:
         run: devskim analyze -I . -O devskim.sarif --ignore-globs "**/.git/**,**/bin/**,**/obj/**,**/packages/**"
 
       - name: Envoyer le SARIF vers Code scanning
+        if: ${{ vars.CODE_SECURITY != 'non' }}
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: devskim.sarif
           category: devskim
+
+      - name: Conserver le SARIF (sans Code Security)
+        if: ${{ vars.CODE_SECURITY == 'non' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: sarif-devskim
+          path: devskim.sarif
+          retention-days: 30
