@@ -1,0 +1,30 @@
+# Règles de détection de secrets propres à WinVOIE, en plus des règles par défaut de Gitleaks.
+# À ENREGISTRER EN UTF-8 SANS BOM : avec BOM, Gitleaks refuse le fichier (« invalid character at start of key »).
+# Toute nouvelle règle se teste sur des exemples positifs ET négatifs avant d'être rendue bloquante.
+
+[extend]
+useDefault = true
+
+# Mot de passe de maintenance comparé en dur (défaut corrigé par la PR #18, issue #17)
+[[rules]]
+id = "mot-de-passe-compare-en-dur"
+description = "Saisie comparée à un mot de passe écrit dans le code"
+regex = '''(?i)PSW_saisie\s*=\s*"([^"]{4,})"'''
+secretGroup = 1
+keywords = ["psw_saisie"]
+
+# Fichier de configuration mail (C:\WVOIE\MAIL\mail_parametres.con) rempli puis commité
+[[rules]]
+id = "mot-de-passe-config-mail"
+description = "Mot de passe SMTP dans un fichier de configuration mail"
+regex = '''(?im)^mot_de_passe\t([^\s]{4,})'''
+secretGroup = 1
+keywords = ["mot_de_passe"]
+
+# Mot de passe dans une chaîne de connexion (règle du jour 4)
+[[rules]]
+id = "mot-de-passe-chaine-connexion"
+description = "Mot de passe dans une chaîne de connexion"
+regex = '''(?i)(?:^|[;"'])\s*(?:password|pwd)\s*=\s*([^;"'\s]{6,})\s*[;"']'''
+secretGroup = 1
+keywords = ["password", "pwd"]

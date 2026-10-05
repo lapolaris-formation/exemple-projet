@@ -1,0 +1,18 @@
+<Project>
+  <!--
+    Injecté UNIQUEMENT en CI via /p:CustomAfterMicrosoftCommonTargets=...
+    => aucun changement dans le .vbproj du projet.
+    AnalyzersRoot : dossier où le workflow a fait "nuget install" des analyseurs.
+    SarifOutput   : fichier SARIF produit par le compilateur VB (Roslyn).
+  -->
+  <PropertyGroup>
+    <RunAnalyzers>true</RunAnalyzers>
+    <ErrorLog Condition="'$(SarifOutput)' != ''">$(SarifOutput),version=2.1</ErrorLog>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(AnalyzersRoot)' != ''">
+    <Analyzer Include="$(AnalyzersRoot)\SecurityCodeScan.VS2019.*\analyzers\dotnet\*.dll" />
+    <Analyzer Include="$(AnalyzersRoot)\Microsoft.CodeAnalysis.NetAnalyzers.*\analyzers\dotnet\vb\*.dll" />
+    <!-- importé après Microsoft.Managed.Core.targets : on alimente directement EditorConfigFiles -->
+    <EditorConfigFiles Include="$(MSBuildThisFileDirectory)security.globalconfig" />
+  </ItemGroup>
+</Project>

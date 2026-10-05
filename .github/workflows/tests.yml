@@ -1,0 +1,48 @@
+name: Tests WinVOIE
+
+on:
+  push:
+    branches: [ main, 'release/**' ]
+  pull_request:
+    branches: [ main, 'release/**' ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    # Projet de tests xUnit à l'ancien format (packages.config) : compilé par MSBuild,
+    # exécuté par vstest.console. "dotnet test" n'exécuterait rien et renverrait 0.
+    runs-on: windows-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v7
+
+      - name: Installer MSBuild
+        uses: microsoft/setup-msbuild@v3
+
+      - name: Restaurer les paquets (packages.config)
+        run: msbuild WinVOIE.sln -t:restore -p:RestorePackagesConfig=true
+
+      - name: Compiler
+        run: msbuild WinVOIE.sln -p:Configuration=Release "-p:Platform=Any CPU" -m
+
+      - name: Exécuter les tests
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          # Chemin exact plutôt que "**\vstest.console.exe" : la recherche récursive coûte une minute
+          $vstest = & $vswhere -latest -products * -find "Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe" | Select-Object -First 1
+          & $vstest tests\WinVOIE.Tests\bin\Release\WinVOIE.Tests.dll `
+            "/logger:trx;LogFileName=resultats.trx" /ResultsDirectory:TestResults
+          exit $LASTEXITCODE
+
+      # Les rapports ne sont jamais versionnés (.gitignore) : ils vivent ici, en artefact
+      - name: Publier les résultats de tests
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: resultats-tests-${{ github.sha }}
+          path: TestResults
+          retention-days: 30

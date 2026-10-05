@@ -1,0 +1,77 @@
+name: Analyse de code (VB.NET)
+
+# CodeQL ne supporte PAS VB.NET : on produit du SARIF avec d'autres outils
+# et on l'envoie dans l'onglet Security > Code scanning.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: "30 5 * * 1"     # lundi 5h30 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write   # upload SARIF
+  actions: read
+
+jobs:
+  roslyn:
+    name: Analyseurs Roslyn (SecurityCodeScan + NetAnalyzers)
+    runs-on: windows-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v7
+
+      - name: Installer MSBuild
+        uses: microsoft/setup-msbuild@v3
+
+      - name: Restaurer les paquets (packages.config)
+        run: msbuild WinVOIE.sln -t:restore -p:RestorePackagesConfig=true
+
+      # Paquets d'analyseurs téléchargés depuis nuget.org, hors du projet (versions épinglées)
+      - name: Télécharger les analyseurs
+        shell: pwsh
+        run: |
+          $an = "${{ runner.temp }}\an"
+          New-Item -ItemType Directory -Force $an | Out-Null
+          foreach ($p in @("SecurityCodeScan.VS2019/5.6.7", "Microsoft.CodeAnalysis.NetAnalyzers/9.0.0")) {
+            $id, $v = $p.Split('/')
+            Invoke-WebRequest "https://www.nuget.org/api/v2/package/$id/$v" -OutFile "$an\$id.$v.zip"
+            Expand-Archive "$an\$id.$v.zip" -DestinationPath "$an\$id.$v"
+          }
+
+      # On analyse le projet de l'application, pas la solution : les tests n'ont pas à l'être
+      - name: Compiler avec analyse (aucune modification du .vbproj)
+        run: >
+          msbuild WinVOIE\WinVOIE.vbproj -t:Rebuild -p:Configuration=Release
+          "-p:CustomAfterMicrosoftCommonTargets=${{ github.workspace }}\.github\codescan\Analyzers.targets"
+          "-p:AnalyzersRoot=${{ runner.temp }}\an"
+          "-p:SarifOutput=${{ runner.temp }}\roslyn.sarif"
+
+      - name: Envoyer le SARIF vers Code scanning
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: ${{ runner.temp }}/roslyn.sarif
+          category: roslyn-vbnet
+
+  devskim:
+    name: DevSkim (motifs, tous langages)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v7
+
+      - name: Installer DevSkim CLI
+        run: dotnet tool install --global Microsoft.CST.DevSkim.CLI
+
+      - name: Analyser
+        run: devskim analyze -I . -O devskim.sarif --ignore-globs "**/.git/**,**/bin/**,**/obj/**,**/packages/**"
+
+      - name: Envoyer le SARIF vers Code scanning
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: devskim.sarif
+          category: devskim

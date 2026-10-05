@@ -1,0 +1,52 @@
+name: Build WinVOIE
+
+on:
+  push:
+    branches: [ main, 'release/**' ]
+  pull_request:
+    branches: [ main, 'release/**' ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    # .NET Framework 4.8 + resx binaires (icônes/images) => MSBuild "complet" de Visual Studio obligatoire.
+    # "dotnet build" échoue (MSB3822 / MSB3823), exactement comme sur le projet d'origine.
+    runs-on: windows-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v7
+
+      - name: Installer MSBuild
+        uses: microsoft/setup-msbuild@v3
+
+      # dotnet restore ne lit pas packages.config : c'est MSBuild qui restaure (sans nuget.exe)
+      - name: Restaurer les paquets (packages.config)
+        run: msbuild WinVOIE.sln -t:restore -p:RestorePackagesConfig=true
+
+      - name: Compiler
+        # Le projet Setup (.vdproj) n'est pas supporté par MSBuild => warning MSB4078 attendu
+        run: msbuild WinVOIE.sln -p:Configuration=Release "-p:Platform=Any CPU" -m
+
+      # Un build vert ne prouve pas que l'exécutable démarre : une mise à jour de paquet peut
+      # livrer une DLL absente ou sans redirection de liaison (PR #11 et #27, issue #32).
+      # La sonde charge chaque assembly référencé, avec la configuration réelle de l'exécutable.
+      - name: Vérifier les liaisons des assemblies livrés
+        shell: pwsh
+        run: |
+          $sortie = Join-Path $env:RUNNER_TEMP "liaisons"
+          Copy-Item WinVOIE\bin\Release -Destination $sortie -Recurse
+          Copy-Item WinVOIE\bin\Release\WinVOIE.exe.config (Join-Path $sortie "verifier-liaisons.exe.config")
+          & "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe" /nologo "/out:$sortie\verifier-liaisons.exe" .github\outils\VerifierLiaisons.cs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & (Join-Path $sortie "verifier-liaisons.exe")
+          exit $LASTEXITCODE
+
+      - name: Téléverser les binaires
+        uses: actions/upload-artifact@v7
+        with:
+          name: winvoie-${{ github.sha }}
+          path: WinVOIE/bin/Release/
+          retention-days: 90

@@ -1,0 +1,7 @@
+# Trouvailles historiques acquittées : chaque ligne renvoie à sa décision.
+# Ne JAMAIS ajouter une trouvaille sans issue ni décision écrite.
+
+# Issue #17, PR #18 : mots de passe de maintenance comparés en dur dans le commit d'import.
+# Sortis du code, considérés comme compromis et abandonnés ; ils restent dans l'historique.
+5602e0899c98fba673321732a83afb6546a9b19e:WinVOIE/Form/Frm_Reglage_Zero_Statique.vb:mot-de-passe-compare-en-dur:68
+5602e0899c98fba673321732a83afb6546a9b19e:WinVOIE/Form/Frm_util_Menu.vb:mot-de-passe-compare-en-dur:13

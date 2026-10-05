@@ -1,0 +1,20 @@
+# Relecteurs par défaut sur l'ensemble du dépôt
+*                       @lapolaris-formation/developpeurs
+
+# Code source applicatif
+/WinVOIE/               @lapolaris-formation/developpeurs
+
+# Fichiers sensibles : workflows et configuration de sécurité
+# (couvre aussi .github/CODEOWNERS lui-même)
+/.github/               @lapolaris-formation/responsables
+/.github/workflows/     @lapolaris-formation/responsables
+
+# Politique de sécurité : engagements de l'entreprise (jour 4)
+/SECURITY.md            @lapolaris-formation/responsables
+
+# Détection de secrets : acquitter une trouvaille est une décision de sécurité
+/.gitleaks.toml         @lapolaris-formation/responsables
+/.gitleaksignore        @lapolaris-formation/responsables
+
+# DLL de fournisseurs versionnées (TwinCAT, Fde) : invisibles pour Dependabot et le SBOM
+/WinVOIE/dll/           @lapolaris-formation/responsables

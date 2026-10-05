@@ -1,0 +1,44 @@
+name: Vérification de la pull request
+
+# Phase 3 du jour 4 : le lien vers une issue devient bloquant.
+# Relancé quand la description est modifiée (types: edited).
+on:
+  pull_request:
+    branches: [ main, 'release/**' ]
+    types: [ opened, edited, reopened, synchronize ]
+
+permissions:
+  contents: read
+
+jobs:
+  issue-liee:
+    # Les PR de Dependabot n'ont pas d'issue : job sauté, compté comme réussi
+    if: github.event.pull_request.user.login != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: La description référence une issue
+        env:
+          # Jamais ${{ }} directement dans le script : la description est un texte libre (injection)
+          DESCRIPTION: ${{ github.event.pull_request.body }}
+        run: |
+          if printf '%s' "$DESCRIPTION" | grep -Eiq '(close[sd]?|fix(e[sd])?|resolve[sd]?|refs)[[:space:]]+#[0-9]+'; then
+            echo "Issue liée trouvée."
+          else
+            echo "::error::La description doit référencer une issue : « Closes #N » (ou Fixes, Resolves, Refs)."
+            exit 1
+          fi
+
+  titre-pr:
+    # Le titre devient la 1re ligne du commit de fusion et du changelog (cas de la PR #20 « Ci/19 detection secrets »)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Le titre suit Conventional Commits
+        env:
+          TITRE: ${{ github.event.pull_request.title }}
+        run: |
+          if printf '%s' "$TITRE" | grep -Eq '^(feat|fix|docs|refactor|test|build|ci|chore|perf)(\([^()]+\))?!?: [^ ].*'; then
+            echo "Titre conforme."
+          else
+            echo "::error::Titre attendu : « type(portée): description », types feat, fix, docs, refactor, test, build, ci, chore, perf."
+            exit 1
+          fi

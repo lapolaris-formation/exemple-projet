@@ -1,0 +1,37 @@
+﻿# EditorConfig - Configuration d'encodage pour le projet WinVOIE
+# https://editorconfig.org
+
+root = true
+
+# Paramètres par défaut pour tous les fichiers
+[*]
+charset = utf-8-bom
+end_of_line = crlf
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Fichiers Visual Basic
+[*.vb]
+charset = utf-8-bom
+
+# Fichiers de projet et configuration
+[*.{vbproj,csproj,sln}]
+charset = utf-8-bom
+
+# Fichiers XML
+[*.xml]
+charset = utf-8-bom
+
+# Fichiers Markdown
+[*.md]
+trim_trailing_whitespace = false
+
+# Fichiers YAML (workflows, dependabot)
+[*.{yml,yaml}]
+indent_size = 2
+
+# Gitleaks refuse un fichier de configuration avec BOM
+[{.gitleaks.toml,.gitleaksignore}]
+charset = utf-8

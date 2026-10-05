@@ -1,0 +1,13 @@
+is_global = true
+
+# Toutes les règles "Security" des NetAnalyzers (CA2xxx/CA3xxx/CA5xxx) en warning
+# (beaucoup sont désactivées par défaut)
+dotnet_analyzer_diagnostic.category-Security.severity = warning
+
+# Quelques règles qualité utiles pour la démo
+dotnet_diagnostic.CA1031.severity = suggestion
+dotnet_diagnostic.CA2000.severity = warning
+dotnet_diagnostic.CA1416.severity = none
+
+# Diagnostics au niveau assembly (sans fichier/ligne) : inutiles dans Code scanning
+dotnet_diagnostic.CA1824.severity = none

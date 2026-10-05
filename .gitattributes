@@ -1,0 +1,20 @@
+# Détection automatique des fichiers texte, stockés en LF dans le dépôt
+* text=auto
+
+# Fichiers Windows : toujours en CRLF
+*.sln     text eol=crlf
+*.bat     text eol=crlf
+*.cmd     text eol=crlf
+
+# Scripts Linux : toujours en LF (important pour GitHub Actions)
+*.sh      text eol=lf
+
+# Fichiers binaires
+*.png     binary
+*.jpg     binary
+*.bmp     binary
+*.ico     binary
+*.dll     binary
+*.exe     binary
+*.msi     binary
+*.pfx     binary
